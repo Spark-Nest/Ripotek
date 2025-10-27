@@ -52,13 +52,14 @@ export default function Page(){
               <h3 className="h3">Demo: Fabric + Databricks Orchestration</h3>
               <p className="text-slate-600 text-sm">2‑minute walk‑through of ingest→transform→serve with Delta Lake and a Power BI semantic layer.</p>
               <div className="mt-4 aspect-video rounded-xl overflow-hidden">
-  <iframe width="560" height="315" 
-  src="https://www.youtube.com/embed/X_c7gLfJz_Q?si=gfFMbz0JSjSTyUIA" 
-  title="Ripotek Demo Video" 
-  frameBorder="0" 
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-  referrerPolicy="strict-origin-when-cross-origin" 
-  allowFullScreen></iframe>
+  <iframe
+    src="https://www.youtube.com/embed/X_c7gLfJz_Q?si=gfFMbz0JSjSTyUIA"
+    title="Ripotek Demo Video"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    className="w-full h-full"
+  ></iframe>
   
 </div>
 
