@@ -24,7 +24,7 @@ export async function POST(req: Request){
             { name: "message", value: body.message },
             { name: "lifecyclestage", value: body.type }
           ],
-          context: { pageUri: "https://www.ripotek.ca/contact", pageName: "Contact" }
+          context: { pageUri: "https://www.ripotek.com/contact", pageName: "Contact" }
         })
       });
     } catch {}
