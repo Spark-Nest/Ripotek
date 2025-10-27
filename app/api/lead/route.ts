@@ -1,10 +1,17 @@
-
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request){
   const body = await req.json();
   const portal = process.env.HUBSPOT_PORTAL_ID;
-  const formGuid = process.env.HUBSPOT_FORM_GUID;
+
+  const GUIDS: Record<string, string | undefined> = {
+    "Consulting": process.env.HUBSPOT_FORM_GUID_CONSULTING,
+    "Training": process.env.HUBSPOT_FORM_GUID_TRAINING,
+    "Careers": process.env.HUBSPOT_FORM_GUID_CAREERS
+  };
+
+  const formGuid = GUIDS[body.type as string] || process.env.HUBSPOT_FORM_GUID;
+
   if (portal && formGuid){
     try {
       await fetch(`https://api.hsforms.com/submissions/v3/integration/submit/${portal}/${formGuid}`, {
@@ -15,12 +22,12 @@ export async function POST(req: Request){
             { name: "email", value: body.email },
             { name: "firstname", value: body.name },
             { name: "message", value: body.message },
-            { name: "type", value: body.type }
+            { name: "lifecyclestage", value: body.type }
           ],
-          context: { pageUri: "https://ripotek.example/contact", pageName: "Contact" }
+          context: { pageUri: "https://www.ripotek.ca/contact", pageName: "Contact" }
         })
       });
-    } catch(e){ /* ignore in starter */ }
+    } catch {}
   }
   return NextResponse.json({ ok: true });
 }
