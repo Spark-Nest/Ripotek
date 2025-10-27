@@ -1,0 +1,17 @@
+# Node / Next / Vercel
+node_modules/
+.next/
+.vercel/
+dist/
+out/
+coverage/
+*.log
+*.DS_Store
+
+# Env & local
+.env*
+*.local
+
+# Tooling caches
+.pnpm-store/
+turbo/
