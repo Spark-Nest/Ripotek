@@ -43,7 +43,13 @@ export default function Contact(){
         <div className="h3">Book a discovery call</div>
         <p className="text-sm text-slate-600">Neutral booking widget embed. Replace the iframe src with your provider later.</p>
         <div className="mt-4 aspect-video rounded-xl bg-slate-100 grid place-items-center">
-        <iframe title="Booking" src="about:blank" className="w-full h-full rounded-xl border" />
+        <iframe
+  title="Booking"
+  src="https://calendly.com/paroyal007/30min-1"
+  className="w-full h-full rounded-xl border"
+  allow="camera; microphone; fullscreen"
+></iframe>
+
         </div>
       </div>
     </div>
