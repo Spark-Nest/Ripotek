@@ -9,9 +9,9 @@ export default function Footer() {
           <Image
             src="/assets/ripotek_logo.png"
             alt="Ripotek logo"
-            width={32}
-            height={32}
-            className="w-auto h-8"
+            width={48}
+            height={48}
+            className="w-auto h-16"
           />
 
           <span className="font-semibold text-slate-900">RIPOTEK</span>

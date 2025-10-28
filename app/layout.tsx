@@ -8,7 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.ripotek.ca"),
+  metadataBase: new URL("https://www.ripotek.com"),
   title: "Ripotek — Data, BI, Fabric, Databricks, AI",
   description:
     "Ripotek helps enterprises design, engineer, and deliver modern data platforms: Azure, Microsoft Fabric, Databricks, Power BI, and Generative AI.",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     title: "Ripotek",
     description:
       "Modern consulting and training for Azure, Fabric, Databricks, Power BI, and AI.",
-    url: "https://www.ripotek.ca",
+    url: "https://www.ripotek.com",
     siteName: "Ripotek",
     images: [{ url: "/og_ripotek.png", width: 1200, height: 630 }],
     locale: "en_CA",
