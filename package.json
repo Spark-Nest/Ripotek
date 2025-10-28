@@ -8,13 +8,17 @@
     "start": "next start"
   },
   "dependencies": {
-    "@sanity/client": "6.21.3",
+    "@portabletext/react": "^3.2.4",
+    "@sanity/client": "^6.29.1",
+    "@sanity/vision": "^3.99.0",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "clsx": "2.1.1",
+    "groq": "^3.99.0",
     "next": "14.2.5",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "sanity": "^3.99.0"
   },
   "devDependencies": {
     "@types/node": "20.16.10",
