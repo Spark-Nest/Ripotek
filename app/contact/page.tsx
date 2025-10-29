@@ -29,7 +29,7 @@ export default function ContactPage() {
       const data = await res.json();
       if (!res.ok || data.ok === false) {
         setStatus("error");
-        setError(data?.error || "Submission failed");
+        setError(data?.detail || data?.error || "Submission failed");
       } else {
         setStatus("ok");
         form.reset();
