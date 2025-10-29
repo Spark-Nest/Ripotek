@@ -1,57 +1,91 @@
+"use client";
 
-'use client';
-import { useState } from 'react';
+import { useState } from "react";
 
-export default function Contact(){
-  const [status, setStatus] = useState<string|undefined>();
+export default function ContactPage() {
+  const [status, setStatus] = useState<"idle"|"loading"|"ok"|"error">("idle");
+  const [error, setError] = useState<string>("");
 
-  async function submit(e: any){
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    setStatus('Sending...');
+    setStatus("loading");
+    setError("");
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get("name") || ""),
+      email: String(formData.get("email") || ""),
+      message: String(formData.get("message") || ""),
+      type: String(formData.get("type") || "Consulting")
+    };
+
     try {
-      const res = await fetch('/api/lead', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
-      if(!res.ok) throw new Error('Failed');
-      setStatus('Thanks! We will reach out shortly.');
-      e.currentTarget.reset();
-    } catch {
-      setStatus('Something went wrong. Please try again.');
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok || data.ok === false) {
+        setStatus("error");
+        setError(data?.error || "Submission failed");
+      } else {
+        setStatus("ok");
+        form.reset();
+      }
+    } catch (err: any) {
+      setStatus("error");
+      setError(err?.message || "Network error");
     }
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-16">
+    <div className="max-w-3xl mx-auto px-4 py-16">
       <h1 className="text-4xl font-extrabold">Contact Ripotek</h1>
-      <p className="mt-2 text-slate-700">Separate forms for Consulting, Training, and Careers. Or book a discovery call below.</p>
+      <p className="mt-2 text-slate-700">Tell us a bit about your needs and we’ll reply shortly.</p>
 
-      <form onSubmit={submit} className="card grid gap-3 mt-6">
-        <div className="grid md:grid-cols-3 gap-3">
-          <input className="border rounded-lg px-3 py-2" name="name" placeholder="Name" required/>
-          <input className="border rounded-lg px-3 py-2" name="email" placeholder="Work Email" type="email" required/>
-          <select className="border rounded-lg px-3 py-2" name="type">
+      <form onSubmit={onSubmit} className="mt-6 grid gap-4">
+        <div>
+          <label className="block text-sm font-medium">Name</label>
+          <input name="name" required className="mt-1 w-full rounded border px-3 py-2" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Email</label>
+          <input type="email" name="email" required className="mt-1 w-full rounded border px-3 py-2" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">I’m interested in</label>
+          <select name="type" className="mt-1 w-full rounded border px-3 py-2">
             <option>Consulting</option>
             <option>Training</option>
             <option>Careers</option>
           </select>
         </div>
-        <textarea className="border rounded-lg px-3 py-2" rows={4} name="message" placeholder="What can we help you build?" required/>
-        <button className="btn btn-primary w-fit">Submit</button>
-        {status && <small className="helper">{status}</small>}
+        <div>
+          <label className="block text-sm font-medium">Message</label>
+          <textarea name="message" required rows={5} className="mt-1 w-full rounded border px-3 py-2" />
+        </div>
+
+        <button
+          disabled={status === "loading"}
+          className="inline-flex items-center justify-center px-4 py-2 rounded-xl font-semibold text-white bg-gradient-to-br from-[#7b34ff] to-[#142a66]"
+        >
+          {status === "loading" ? "Sending..." : "Send message"}
+        </button>
+
+        {status === "ok" && (
+          <div className="text-green-700">Thanks! We received your message.</div>
+        )}
+        {status === "error" && (
+          <div className="text-red-700">Sorry, something went wrong. {error}</div>
+        )}
       </form>
 
-      <div id="book" className="mt-10 card">
-        <div className="h3">Book a discovery call</div>
-        <p className="text-sm text-slate-600">Neutral booking widget embed. Replace the iframe src with your provider later.</p>
-        <div className="mt-4 aspect-video rounded-xl bg-slate-100 grid place-items-center">
-        <iframe
-  title="Booking"
-  src="https://calendly.com/paroyal007/30min-1"
-  className="w-full h-full rounded-xl border"
-  allow="camera; microphone; fullscreen"
-></iframe>
-
-        </div>
-      </div>
+      {/* Booking widget stays below if you like */}
+      {/* <div className="mt-10 aspect-video">
+        <iframe ... />
+      </div> */}
     </div>
   );
 }
