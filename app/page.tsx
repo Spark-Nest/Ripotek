@@ -77,21 +77,33 @@ export default function Page(){
           <a href="/contact" className="">Download capabilities deck</a>
         </div>
         <div className="mt-8 grid md:grid-cols-3 gap-6">
-          {[
-            {title:'Strategy',desc:'Architecture reviews, governance, roadmaps.'},
-            {title:'Build',desc:'Azure / Databricks / Fabric lakehouse, ELT pipelines, semantic models.'},
-            {title:'Analytics',desc:'Power BI dashboards, KPI frameworks, embedded analytics.'},
-            {title:'MLOps & AI',desc:'GenAI POCs, feature stores, model serving.'},
-            {title:'Managed services',desc:'Admin, monitoring, cost control for BI & data.'},
-            {title:'Training',desc:'Power BI, Azure DE, Databricks, AI, ADF Masterclass.'},
-          ].map((c,i)=> (
-            <div key={i} className="card hover:shadow-sm transition">
-              <h3 className="h3">{c.title}</h3>
-              <p className="text-slate-600 text-sm mt-2">{c.desc}</p>
-              <a href="/contact" className="mt-4 inline-block text-sm text-teal-700">Request proposal →</a>
-            </div>
-          ))}
-        </div>
+            {[
+              { title: "Strategy",        desc: "Architecture reviews, governance, roadmaps." },
+              { title: "Build",           desc: "Azure / Databricks / Fabric lakehouse, ELT pipelines, semantic models." },
+              { title: "Analytics",       desc: "Power BI dashboards, KPI frameworks, embedded analytics." },
+              { title: "MLOps & AI",      desc: "GenAI POCs, feature stores, model serving." },
+              { title: "Managed services",desc: "Admin, monitoring, cost control for BI & data." },
+              { title: "Training",        desc: "Power BI, Azure DE, Databricks, AI, ADF Masterclass." },
+            ].map((c, i) => (
+              <div key={i} className="card rounded-2xl border p-5">
+                {/* Tiny SVG so the zoom effect is visible even without images */}
+                <div className="mb-4 h-10 w-10 text-teal-700">
+                  <svg viewBox="0 0 24 24" className="h-10 w-10" aria-hidden>
+                    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.12" />
+                    <path d="M7 13l3 3 7-7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+
+                <h3 className="text-xl font-semibold">{c.title}</h3>
+                <p className="text-slate-600 text-sm mt-2">{c.desc}</p>
+
+                <a href="/contact" className="mt-4 inline-block text-sm text-teal-700">
+                  Request proposal →
+                </a>
+              </div>
+            ))}
+          </div>
+
       </section>
 
       <section className="bg-slate-900 text-white">
