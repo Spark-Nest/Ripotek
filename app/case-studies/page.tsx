@@ -19,34 +19,43 @@ export default async function CaseStudies() {
     <div className="max-w-6xl mx-auto px-4 py-16">
       <h1 className="text-4xl font-extrabold">Success Stories</h1>
 
-      {/* Optional: simple legend */}
       <p className="mt-3 text-slate-600">
         Real projects across Energy, Public Sector, and Financial Services using Azure, Fabric, Databricks, Power BI, and AI.
       </p>
 
-      <div className="grid md:grid-cols-3 gap-6 mt-8">
+      <div className="grid gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((c: any, i: number) => {
-          const thumbUrl =
-            c.thumbnail?.asset
-              ? urlFor(c.thumbnail).width(600).height(400).fit("crop").url()
-              : null;
+          const thumbUrl = c.thumbnail?.asset
+            ? urlFor(c.thumbnail)
+                .width(900)            // sharp & consistent
+                .height(600)           // 3:2 ratio
+                .fit("crop")           // respect hotspot
+                .auto("format")
+                .quality(80)
+                .url()
+            : null;
 
           return (
-            <Link key={i} className="card no-underline p-0 overflow-hidden hover:shadow-lg transition" href={c.href}>
+            <Link
+              key={i}
+              href={c.href}
+              className="block no-underline overflow-hidden rounded-2xl border hover:shadow-lg transition"
+            >
               {thumbUrl && (
-                <div className="relative w-full h-40">
+                <div className="relative w-full aspect-[3/2]">
                   <Image
                     src={thumbUrl}
                     alt={c.thumbnail?.alt || c.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </div>
               )}
+
               <div className="p-5">
-                <div className="h3">{c.title}</div>
-                {c.kpi && <div className="text-sm text-slate-600 mt-1">{c.kpi}</div>}
+                <div className="text-lg font-semibold">{c.title}</div>
+                {c.kpi && <div className="mt-1 text-sm text-slate-600">{c.kpi}</div>}
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   {(c.industry || []).map((tag: string, idx: number) => (

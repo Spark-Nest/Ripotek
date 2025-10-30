@@ -1,0 +1,57 @@
+/* Tailwind layers must be first */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global element styles using @apply go inside a layer */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-slate-800 antialiased;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-extrabold text-slate-900 tracking-tight;
+  }
+
+  a {
+    @apply text-teal-700 transition-colors duration-200;
+  }
+
+  a:hover {
+    @apply text-teal-800;
+  }
+}
+
+/* Components/utilities can live in their own layer */
+@layer components {
+  /* Case Study Card Hover Animation */
+  .card {
+    overflow: hidden;
+    border-radius: 1rem; /* matches rounded-2xl */
+    transition: box-shadow 0.3s ease;
+  }
+  .card img {
+    transition: transform 0.4s ease;
+  }
+  .card:hover img {
+    transform: scale(1.03);
+  }
+  .card:hover {
+    box-shadow: 0 8px 20px rgba(0, 128, 128, 0.15);
+  }
+}
+
+/* Optional responsive tweaks */
+@layer utilities {
+  @media (max-width: 640px) {
+    h1 { font-size: 1.875rem; } /* text-3xl */
+    h2 { font-size: 1.5rem; }   /* text-2xl */
+  }
+}

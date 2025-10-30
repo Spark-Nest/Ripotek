@@ -18,23 +18,35 @@ export default async function Page({ params }: { params: { slug: string } }) {
   }
 
   const heroUrl = doc.heroImage?.asset
-    ? urlFor(doc.heroImage).width(1600).height(800).fit("crop").url()
-    : null;
+  ? urlFor(doc.heroImage)
+      .width(1920)       // desktop crisp
+      .height(1080)      // 16:9
+      .fit("crop")       // respects hotspot set in Studio
+      .auto("format")
+      .quality(80)
+      .url()
+  : null;
+
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-16">
       {heroUrl && (
-        <div className="relative w-full h-64 rounded-2xl overflow-hidden mb-8">
-          <Image
-            src={heroUrl}
-            alt={doc.heroImage?.alt || doc.title}
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
+  // 16:9 ratio box prevents distortion on all screens
+  <div
+    className="relative w-full rounded-2xl overflow-hidden mb-8"
+    style={{ aspectRatio: "16 / 9" }}
+  >
+    <Image
+      src={heroUrl}
+      alt={doc.heroImage?.alt || doc.title}
+      fill
+      sizes="100vw"
+      className="object-cover"
+      priority
+    />
+  </div>
+)}
+
 
       <h1 className="text-4xl font-extrabold">{doc.title}</h1>
 
