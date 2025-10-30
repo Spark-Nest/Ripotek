@@ -36,44 +36,45 @@ export default async function CaseStudies() {
             : null;
 
           return (
-            <Link
-              key={i}
-              href={c.href}
-              className="block no-underline overflow-hidden rounded-2xl border hover:shadow-lg transition"
-            >
-              {thumbUrl && (
-                <div className="relative w-full aspect-[3/2]">
-                  <Image
-                    src={thumbUrl}
-                    alt={c.thumbnail?.alt || c.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                </div>
-              )}
+                  <Link
+                    key={i}
+                    href={c.href}
+                    className="card block no-underline rounded-2xl border transition-shadow"
+                  >
+                    {thumbUrl && (
+                      <div className="relative w-full aspect-[3/2]">
+                        <Image
+                          src={thumbUrl}
+                          alt={c.thumbnail?.alt || c.title}
+                          fill
+                          className="object-cover fade-in"   // 👈 note: fade-in class added here
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      </div>
+                    )}
 
-              <div className="p-5">
-                <div className="text-lg font-semibold">{c.title}</div>
-                {c.kpi && <div className="mt-1 text-sm text-slate-600">{c.kpi}</div>}
+                    <div className="p-5">
+                      <div className="text-lg font-semibold">{c.title}</div>
+                      {c.kpi && <div className="mt-1 text-sm text-slate-600">{c.kpi}</div>}
 
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {(c.industry || []).map((tag: string, idx: number) => (
-                    <span key={`i-${idx}`} className="px-2 py-0.5 text-xs bg-teal-50 text-teal-700 rounded-full">
-                      {tag}
-                    </span>
-                  ))}
-                  {(c.services || []).map((tag: string, idx: number) => (
-                    <span key={`s-${idx}`} className="px-2 py-0.5 text-xs bg-slate-100 text-slate-700 rounded-full">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {(c.industry || []).map((tag: string, idx: number) => (
+                          <span key={`i-${idx}`} className="px-2 py-0.5 text-xs bg-teal-50 text-teal-700 rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                        {(c.services || []).map((tag: string, idx: number) => (
+                          <span key={`s-${idx}`} className="px-2 py-0.5 text-xs bg-slate-100 text-slate-700 rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
 
-                <div className="mt-4 text-teal-700">Read case study →</div>
-              </div>
-            </Link>
-          );
+                      <div className="mt-4 text-teal-700">Read case study →</div>
+                    </div>
+                  </Link>
+                );
+
         })}
       </div>
     </div>
