@@ -1,92 +1,99 @@
 import { NextResponse } from "next/server";
 import { cookies, headers } from "next/headers";
 
-type Payload = {
-  name: string;
-  email: string;
-  message: string;
-  type?: "Consulting" | "Training" | "Careers";
+type LeadType = "Consulting" | "Training" | "Careers";
+
+type IncomingPayload = {
+  type: LeadType;
+  // common
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  // consulting/careers extras
+  phone?: string;
+  company?: string;
+  city?: string;
+  state?: string; // “State/Region”
+  // optional free-text
+  message?: string;
 };
 
-function splitName(full: string) {
-  const parts = full.trim().split(/\s+/);
-  if (parts.length === 1) return { firstname: parts[0], lastname: "" };
-  return { firstname: parts.slice(0, -1).join(" "), lastname: parts.slice(-1).join(" ") };
-}
+const PORTAL = process.env.HUBSPOT_PORTAL_ID;
+
+const FORM_GUIDS: Record<LeadType, string | undefined> = {
+  Consulting: process.env.HUBSPOT_FORM_GUID_CONSULTING,
+  Training: process.env.HUBSPOT_FORM_GUID_TRAINING,
+  Careers: process.env.HUBSPOT_FORM_GUID_CAREERS,
+};
+
+// IMPORTANT: update these if your HubSpot “internal names” differ.
+// Open HubSpot → Marketing → Forms → Edit → Field → “Internal name”
+const FIELD_MAP: Record<LeadType, Array<keyof IncomingPayload>> = {
+  Training: ["firstname", "lastname", "email"],
+  Careers: ["firstname", "lastname", "email", "phone", "city", "state"],
+  Consulting: ["email", "firstname", "lastname", "phone", "company", "state", "city"],
+};
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as Partial<Payload>;
-    const type = (body.type as Payload["type"]) || "Consulting";
-    const name = (body.name || "").trim();
-    const email = (body.email || "").trim();
-    const message = (body.message || "").trim();
+    const body = (await req.json()) as IncomingPayload;
 
-    if (!name || !email || !message) {
-      return NextResponse.json({ ok: false, error: "Missing name, email, or message" }, { status: 400 });
-    }
+    const type: LeadType = (body.type as LeadType) || "Consulting";
+    const formId = FORM_GUIDS[type];
 
-    const { firstname, lastname } = splitName(name);
-
-    const portal = process.env.HUBSPOT_PORTAL_ID;
-    const GUIDS: Record<string, string | undefined> = {
-      Consulting: process.env.HUBSPOT_FORM_GUID_CONSULTING,
-      Training: process.env.HUBSPOT_FORM_GUID_TRAINING,
-      Careers: process.env.HUBSPOT_FORM_GUID_CAREERS
-    };
-    const formGuid = GUIDS[type] || process.env.HUBSPOT_FORM_GUID;
-
-    // If not configured, fail gracefully with a helpful message.
-    if (!portal || !formGuid) {
+    if (!PORTAL || !formId) {
       return NextResponse.json(
         { ok: false, error: "HubSpot env vars missing (portal or form GUID)" },
         { status: 500 }
       );
     }
 
-    // Try to include tracking cookie + page context
+    // Build fields: only include those expected by the selected form, if they have a value.
+    const wanted = FIELD_MAP[type];
+    const fields = wanted
+      .map((name) => ({ name, value: (body as any)[name]?.toString().trim() || "" }))
+      .filter((f) => f.value); // drop empties
+
+    // Minimal validation for requireds (email is always a good idea)
+    if (!fields.find((f) => f.name === "email")) {
+      return NextResponse.json(
+        { ok: false, error: "Missing required field: email" },
+        { status: 400 }
+      );
+    }
+
+    // Context: tracking cookie + page info
     const cookieStore = cookies();
-    const hutk = cookieStore.get("hubspotutk")?.value; // HubSpot tracking cookie if present
+    const hutk = cookieStore.get("hubspotutk")?.value;
     const hdrs = headers();
     const pageUri = hdrs.get("referer") || "https://www.ripotek.com/contact";
     const pageName = "Contact";
 
-    // Build the submission payload
+    // Optional: generic consent block (kept simple)
     const submission = {
-      fields: [
-        { name: "email", value: email },
-        { name: "firstname", value: firstname },
-        { name: "lastname", value: lastname },
-        { name: "message", value: message },
-      ],
-      context: {
-        hutk,                // ok if undefined
-        pageUri,
-        pageName,
-      },
-      // Generic GDPR consent (safe to include; ignored if your form doesn’t require it)
+      fields: fields.map((f) => ({ name: f.name, value: f.value })),
+      context: { hutk, pageUri, pageName },
       legalConsentOptions: {
         consent: {
           consentToProcess: true,
           text: "I agree to allow Ripotek to store and process my personal data.",
-          communications: []
-        }
-      }
+          communications: [],
+        },
+      },
     };
 
     const hsRes = await fetch(
-      `https://api.hsforms.com/submissions/v3/integration/submit/${portal}/${formGuid}`,
+      `https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL}/${formId}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(submission)
+        body: JSON.stringify(submission),
       }
     );
 
-    const text = await hsRes.text(); // read body no matter what, so we can show details
-
+    const text = await hsRes.text();
     if (!hsRes.ok) {
-      // echo HubSpot’s message so you’ll see exactly which field is missing
+      // Echo HubSpot error so you see exactly which field name is wrong/missing
       return NextResponse.json(
         { ok: false, error: "HubSpot submission failed", detail: text },
         { status: 502 }
