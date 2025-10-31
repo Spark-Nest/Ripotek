@@ -1,68 +1,127 @@
+"use client";
+
+import { useState } from "react";
 import { sanity } from "@/lib/sanity";
 import { urlFor } from "@/lib/image";
 import Image from "next/image";
-import Lightbox from "@/components/Lightbox";
-import { Suspense } from "react";
 
-export const revalidate = 120;
+// If you're fetching server-side in a future version, 
+// move the Sanity query to a server component and pass props down.
 
-async function fetchData() {
-  return sanity.fetch(`
-  *[_type=="gallery"]|order(date desc){
-    title, "slug": slug.current, description, date, tags, industry, services,
-    images[]{asset, alt, caption}
-  }`);
-}
+const items = [
+  // Temporary static placeholders until hooked to Sanity
+  {
+    id: 1,
+    img: { asset: "sample1" },
+    alt: "Compressor performance dashboard",
+    album: "Energy Analytics",
+    caption: "Databricks-powered monitoring system.",
+  },
+  {
+    id: 2,
+    img: { asset: "sample2" },
+    alt: "AI training session",
+    album: "Training",
+    caption: "Fabric + Power BI Masterclass in Calgary.",
+  },
+  {
+    id: 3,
+    img: { asset: "sample3" },
+    alt: "Pipeline optimization",
+    album: "Engineering",
+    caption: "Azure-native data lakehouse for operations data.",
+  },
+];
 
-export default async function GalleryPage() {
-  const albums = await fetchData();
+export default function GalleryPage() {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState<{
+    src: string;
+    alt?: string;
+    caption?: string;
+  } | null>(null);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
       <h1 className="text-4xl font-extrabold">Gallery</h1>
-      <p className="mt-2 text-slate-600">Training, client workshops, and community highlights.</p>
+      <p className="mt-2 text-slate-600">
+        Highlights from training, client projects, and community.
+      </p>
 
-      <div className="mt-8 grid gap-10">
-        {albums.map((g: any, gi: number) => (
-          <Album key={gi} album={g} />
-        ))}
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((it) => {
+          // In your live version, replace this with urlFor(it.img).auto("format").url()
+          const src =
+            typeof it.img?.asset === "string"
+              ? `/images/${it.img.asset}.jpg`
+              : "";
+
+          return (
+            <button
+              key={it.id}
+              className="rtk-card group relative aspect-[4/3] overflow-hidden"
+              onClick={() => {
+                if (src) {
+                  setActive({
+                    src,
+                    alt: it.alt,
+                    caption: it.caption,
+                  });
+                  setOpen(true);
+                }
+              }}
+            >
+              {src ? (
+                <Image
+                  src={src}
+                  alt={it.alt || ""}
+                  fill
+                  className="rtk-media fade-in"
+                  sizes="(max-width: 640px) 100vw, 33vw"
+                />
+              ) : (
+                <div className="absolute inset-0 grid place-items-center bg-slate-100 text-slate-500">
+                  No image
+                </div>
+              )}
+
+              {/* optional ink overlay */}
+              <div className="rtk-ink" />
+
+              {/* chip / album */}
+              <div className="absolute left-2 bottom-2 rounded bg-black/60 px-2 py-0.5 text-xs text-white">
+                {it.album}
+              </div>
+            </button>
+          );
+        })}
       </div>
-    </div>
-  );
-}
 
-/* Client subcomponent with lightbox */
-"use client";
-import { useMemo, useState } from "react";
-
-function Album({ album }: { album: any }) {
-  const [open, setOpen] = useState(false);
-  const [img, setImg] = useState<{src?: string; alt?: string; caption?: string}>({});
-
-  const images = useMemo(() => (album.images || []).map((im: any) => ({
-    src: im?.asset ? urlFor(im).width(1600).height(900).fit("crop").auto("format").url() : "",
-    alt: im?.alt || album.title,
-    caption: im?.caption
-  })), [album]);
-
-  return (
-    <section>
-      <h2 className="text-2xl font-bold">{album.title}</h2>
-      {album.description && <p className="text-slate-600 mt-1">{album.description}</p>}
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {images.map((im: any, i: number) => (
-          <button key={i} className="card relative aspect-[4/3]" onClick={() => (setImg(im), setOpen(true))}>
-            {im.src ? (
-              <Image src={im.src} alt={im.alt} fill className="object-cover fade-in" sizes="(max-width: 640px) 100vw, 33vw" />
-            ) : (
-              <div className="absolute inset-0 grid place-items-center bg-slate-100 text-slate-500">No image</div>
+      {/* Modal Viewer */}
+      {open && active && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="relative max-w-4xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={active.src}
+              alt={active.alt || ""}
+              width={1200}
+              height={800}
+              className="rounded-2xl shadow-xl object-contain"
+            />
+            {active.caption && (
+              <p className="mt-2 text-center text-slate-100">
+                {active.caption}
+              </p>
             )}
-          </button>
-        ))}
-      </div>
-
-      <Lightbox open={open} onClose={() => setOpen(false)} src={img.src} alt={img.alt} caption={img.caption}/>
-    </section>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -107,10 +107,124 @@
 
 /* Simple 2-line clamp without plugin */
 .clamp-2 {
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* Non-standard line clamp */
+  -webkit-line-clamp: 2;
+  /* Future standard: */
+  line-clamp: 2;
+}
+
+/* =========================================
+   Ripotek Brand Hover System (cards + media)
+   ========================================= */
+@layer components {
+  /* Card container: base surface + transitions */
+  .rtk-card {
+    @apply rounded-2xl bg-white border border-slate-200 shadow-sm
+           transition-all duration-300 ease-out will-change-transform;
+  }
+
+  /* Card hover: lift + teal halo */
+  .rtk-card:hover {
+    box-shadow:
+      0 10px 24px rgba(2, 132, 199, 0.08),   /* soft cyan-ish base */
+      0 2px 6px rgba(2, 132, 199, 0.06),     /* layered depth */
+      0 0 0 3px rgba(45, 212, 191, 0.16);    /* teal ring glow */
+    transform: translateY(-2px);
+  }
+
+  /* Keyboard focus: clear, accessible outline */
+  .rtk-card:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 4px rgba(45, 212, 191, 0.45),
+      0 8px 20px rgba(2, 132, 199, 0.10);
+    transform: translateY(-1px);
+  }
+
+  /* Media element (Image or video) inside the card */
+  .rtk-media {
+    @apply object-cover transition-transform duration-500 ease-out will-change-transform;
+    transform: scale(1); /* base */
+  }
+  /* Only the media zooms; the card stays elegant */
+  .rtk-card:hover .rtk-media {
+    transform: scale(1.035);
+  }
+
+  /* Optional: subtle top gradient ink for legibility (chips/captions pop) */
+  .rtk-ink {
+    @apply absolute inset-0 pointer-events-none bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300;
+  }
+  .rtk-card:hover .rtk-ink {
+    @apply opacity-100;
+  }
+
+  /* Fade-in for lazy thumbnails */
+  .fade-in {
+    animation: rtk-fade-in 0.45s ease-out both;
+  }
+}
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .rtk-card,
+  .rtk-media {
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+@keyframes rtk-fade-in {
+  from { opacity: 0; filter: saturate(0.8) blur(1px); }
+  to   { opacity: 1; filter: saturate(1) blur(0); }
 }
 
 
+@layer components {
+  /* 16:9, rounded, shadowed container with subtle teal ring on hover */
+  .rtk-player {
+    @apply relative w-full overflow-hidden rounded-2xl shadow-md border border-slate-200;
+    aspect-ratio: 16 / 9;
+    background: #0b1220; /* dark base while loading */
+  }
+  .rtk-player:hover {
+    box-shadow:
+      0 12px 28px rgba(13, 148, 136, 0.12),
+      0 3px 10px rgba(13, 148, 136, 0.08),
+      0 0 0 3px rgba(13, 148, 136, 0.18);
+  }
+
+  .rtk-player-media {
+    @apply absolute inset-0 w-full h-full;
+    border: 0;
+  }
+
+  /* Poster + play overlay (only visible before iframe/video onLoad) */
+  .rtk-player-poster {
+    @apply absolute inset-0 overflow-hidden;
+  }
+  .rtk-player-overlay {
+    @apply absolute inset-0 grid place-items-center bg-black/25 opacity-100 group-hover:bg-black/35 transition-colors;
+  }
+  .rtk-player-play {
+    @apply h-14 w-14 rounded-full grid place-items-center text-teal-700 bg-white/95 shadow;
+  }
+
+  /* Error bar */
+  .rtk-player-fallback {
+    @apply absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2;
+  }
+}
+
+@layer components {
+  .chip {
+    @apply rounded bg-black/65 text-white text-xs px-2 py-0.5;
+  }
+}
 
 
 
