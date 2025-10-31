@@ -12,24 +12,56 @@ function SuccessPopup({ open, onClose }: { open: boolean; onClose: () => void })
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
+
   if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M20 7L9 18l-5-5" stroke="currentColor" className="text-green-600" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl ring-4 ring-teal-300/40 hover:ring-teal-400/60 transition-all duration-500 ease-out animate-scale-in animate-glow-once"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-50 shadow-inner ring-2 ring-teal-200">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden
+            className="text-teal-600"
+          >
+            <path
+              d="M20 7L9 18l-5-5"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-slate-900">Submitted successfully!</h3>
-        <p className="mt-2 text-sm text-slate-600">Thanks for reaching out. We’ll get back to you shortly.</p>
-        <button onClick={onClose} className="mt-5 inline-flex items-center justify-center rounded-xl px-4 py-2 font-semibold text-white bg-gradient-to-br from-[#7b34ff] to-[#142a66]">
+        <h3 className="text-xl font-semibold text-slate-900">
+          Submitted successfully!
+        </h3>
+        <p className="mt-2 text-sm text-slate-600">
+          Thanks for reaching out. We’ll get back to you shortly.
+        </p>
+        <button
+          onClick={onClose}
+          className="mt-5 inline-flex items-center justify-center rounded-xl px-4 py-2 font-semibold text-white bg-gradient-to-br from-teal-600 to-teal-700 hover:from-teal-500 hover:to-teal-600 shadow-md shadow-teal-200 transition"
+        >
           Close
         </button>
       </div>
     </div>
   );
 }
+
+
 
 export default function ContactPage() {
   const [type, setType] = useState<LeadType>("Consulting");
