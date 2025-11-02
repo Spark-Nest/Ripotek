@@ -2,6 +2,7 @@
 import "./globals.css";
 import "./../styles/globals.css";
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/react";
@@ -32,12 +33,18 @@ export const metadata: Metadata = {
   }
 };
 
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-brand",
+});
+
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      <body className={jakarta.className}>
         <Header/>
         <main>{children}</main>
         <Footer/>
